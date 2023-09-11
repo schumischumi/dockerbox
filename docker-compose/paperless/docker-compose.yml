@@ -1,0 +1,73 @@
+version: "3.4"
+services:
+  broker:
+    image: docker.io/library/redis:7
+    restart: unless-stopped
+    networks:
+      - default_paperless
+    volumes:
+      - redisdata:/data
+
+  db:
+    image: docker.io/library/postgres:15
+    restart: unless-stopped
+    networks:
+      - default_paperless
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: paperless
+      POSTGRES_USER: paperless
+      POSTGRES_PASSWORD: paperless
+
+  webserver:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    restart: unless-stopped
+    depends_on:
+      - db
+      - broker
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "-S", "--max-time", "2", "http://localhost:8000"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - traefiknet
+      - default_paperless
+    volumes:
+      - data:/usr/src/paperless/data
+      - media:/usr/src/paperless/media
+      # these two should be changed
+      - export:/usr/src/paperless/export
+      - consume:/usr/src/paperless/consume
+    environment:
+      PAPERLESS_REDIS: redis://broker:6379
+      PAPERLESS_DBHOST: db
+# The UID and GID of the user used to run paperless in the container. Set this
+# to your UID and GID on the host so that you have write access to the
+# consumption directory.
+      USERMAP_UID: 1000
+      USERMAP_GID: 100
+      PAPERLESS_OCR_LANGUAGE: deu
+      PAPERLESS_TIME_ZONE: Europe/Berlin
+      PAPERLESS_SECRET_KEY: $PAPERLESS_SECRET_KEY
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.paperless.rule=Host(`paperless.dockerbox.local`)"
+      - "traefik.http.routers.paperless.entrypoints=web"
+      - "traefik.http.services.paperless.loadbalancer.server.port=8000"
+      - "traefik.http.routers.paperless.service=paperless"
+      - "traefik.docker.network=traefiknet"
+
+networks:
+  traefiknet:
+    external: true
+  default_paperless:
+
+volumes:
+  data:
+  media:
+  pgdata:
+  redisdata:
+  export:
+  consume:
