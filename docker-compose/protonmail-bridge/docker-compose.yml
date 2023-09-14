@@ -1,0 +1,26 @@
+version: '3.3'
+services:
+    protonmail-bridge:
+        container_name: protonmail-bridge
+        networks:
+            - traefiknet
+        volumes:
+            - 'protonmail:/root'
+        ports:
+            - '1025:25/tcp'
+            - '1143:143/tcp'
+        restart: unless-stopped
+        image: shenxn/protonmail-bridge
+# to configure protonbridge if it is already running: 
+# - get all bridge processes with top
+# - kill them
+# - start protonmail-bridge --cli
+# before you login for the first time you should generate new certs with your hostname
+# - openssl req -x509 -newkey rsa:4096 -keyout /root/protoncerts/key.pem -out /root/protoncerts/cert.pem -sha256 -days 3650 -nodes -subj "/CN=<docker-host-hostname>"
+# - start protonmail-bridge --cli
+# - import-tls-cert
+volumes: 
+  protonmail:
+networks:
+  traefiknet:
+    external: true
