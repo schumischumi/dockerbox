@@ -1,0 +1,19 @@
+version: '3.3'
+services:
+  it-tools:
+    restart: unless-stopped
+    image: 'corentinth/it-tools:latest'
+    networks:
+      - traefiknet
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.it-tools.rule=Host(`it-tools.dockerbox.local`)"
+      - "traefik.http.routers.it-tools.entrypoints=web"
+      - "traefik.http.services.it-tools.loadbalancer.server.port=80"
+      - "traefik.http.routers.it-tools.service=it-tools"
+      - "traefik.docker.network=traefiknet"
+
+networks:
+  traefiknet:
+    external: true
+    
