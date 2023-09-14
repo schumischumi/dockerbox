@@ -38,8 +38,8 @@ services:
       - data:/usr/src/paperless/data
       - media:/usr/src/paperless/media
       # these two should be changed
-      - export:/usr/src/paperless/export
-      - consume:/usr/src/paperless/consume
+      - $EXPORT_DIR:/usr/src/paperless/export
+      - $CONSUME_DIR:/usr/src/paperless/consume
     environment:
       PAPERLESS_REDIS: redis://broker:6379
       PAPERLESS_DBHOST: db
@@ -90,5 +90,3 @@ volumes:
   media:
   pgdata:
   redisdata:
-  export:
-  consume:
