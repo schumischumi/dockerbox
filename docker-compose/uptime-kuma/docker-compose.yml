@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - uptime-kuma:/app/data
+    restart: always
+    networks:
+      - traefiknet
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.uptime-kuma.rule=Host(`uptime-kuma.dockerbox.local`)"
+      - "traefik.http.routers.uptime-kuma.entrypoints=web"
+      - "traefik.http.services.uptime-kuma.loadbalancer.server.port=3001"
+      - "traefik.http.routers.uptime-kuma.service=uptime-kuma"
+      - "traefik.docker.network=traefiknet"
+volumes:
+  uptime-kuma:
+networks:
+  traefiknet:
+    external: true
