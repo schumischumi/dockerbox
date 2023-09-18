@@ -1,0 +1,22 @@
+version: '3.3'
+services:
+  restic-rest:
+    volumes:
+      - '/home/user/backup/restic:/data'
+    container_name: rest_server
+    image: restic/rest-server
+    environment:
+      DISABLE_AUTHENTICATION: 1
+    networks:
+      - traefiknet
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.restic-rest.rule=Host(`restic-rest.dockerbox.local`)"
+      - "traefik.http.routers.restic-rest.entrypoints=web"
+      - "traefik.http.services.restic-rest.loadbalancer.server.port=8000"
+      - "traefik.http.routers.restic-rest.service=restic-rest"
+      - "traefik.docker.network=traefiknet"
+  
+networks:
+  traefiknet:
+    external: true
