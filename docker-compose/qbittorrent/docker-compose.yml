@@ -1,0 +1,33 @@
+---
+version: "3.7"
+services:
+  qbittorrent:
+    image: hotio/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - UMASK=002
+      - WEBUI_PORT=8080
+    volumes:
+      - config:/config
+      - /home/user/docker/jellyfin/media:/data
+      - /home/user/docker/qbittorrent/blocklist.p2p:/blocklist.p2p:ro
+    ports:
+      - 8080:8080
+    restart: unless-stopped
+    networks:
+      - traefiknetvpn
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.qbittorrent.rule=Host(`qbittorrent.dockerbox.local`)"
+      - "traefik.http.routers.qbittorrent.entrypoints=web"
+      - "traefik.http.services.qbittorrent.loadbalancer.server.port=8080"
+      - "traefik.http.routers.qbittorrent.service=qbittorrent"
+      - "traefik.docker.network=traefiknetvpn"
+networks:
+  traefiknetvpn:
+    external: true
+volumes:
+    config:
