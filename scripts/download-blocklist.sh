@@ -1,4 +1,7 @@
 #!/bin/bash
+# crontab -e
+# m h  dom mon dow   command
+# 0 5 * * *       /home/user/scripts/download-blocklist.sh
 
 trap_handler() {
     exit_code=$?
