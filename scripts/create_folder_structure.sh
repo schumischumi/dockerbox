@@ -5,4 +5,4 @@ mkdir -p ~/docker/qbittorrent/
 mkdir -p ~/docker/paperless/
 mkdir -p ~/docker/jellyfin/
 mkdir -p ~/backup/restic/
-mkdir -p ~/backup/scripts/
+mkdir -p ~/scripts/
