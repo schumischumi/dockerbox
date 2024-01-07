@@ -54,7 +54,7 @@ services:
       - UMASK=002
       - WEBUI_PORT=8080
     volumes:
-      - /home/user/docker/qbittorrent/config:/config
+      - config:/config
       - /home/user/docker/jellyfin/media:/data
       - /home/user/docker/qbittorrent/blocklist.p2p:/blocklist.p2p:ro
     restart: unless-stopped
