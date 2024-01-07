@@ -10,6 +10,8 @@ services:
       - NET_ADMIN
     devices:
       - /dev/net/tun:/dev/net/tun
+    networks:
+      - traefiknet
     ports:
       - 8888:8888/tcp # HTTP proxy
       - 8388:8388/tcp # Shadowsocks
@@ -37,7 +39,7 @@ services:
       - "traefik.http.routers.qbittorrent.entrypoints=web"
       - "traefik.http.services.qbittorrent.loadbalancer.server.port=8080"
       - "traefik.http.routers.qbittorrent.service=qbittorrent"
-      - "traefik.docker.network=traefiknetvpn"
+      - "traefik.docker.network=traefiknet"
       
   qbittorrent:
     image: hotio/qbittorrent:latest
@@ -57,5 +59,9 @@ services:
       - /home/user/docker/qbittorrent/blocklist.p2p:/blocklist.p2p:ro
     restart: unless-stopped
 
+networks:
+  traefiknet:
+    external: true
+    
 volumes:
     config:
