@@ -1,33 +1,61 @@
 ---
 version: "3.7"
 services:
-  qbittorrent:
-    image: hotio/qbittorrent:latest
-    container_name: qbittorrent
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Etc/UTC
-      - UMASK=002
-      - WEBUI_PORT=8080
-    volumes:
-      - config:/config
-      - /home/user/docker/jellyfin/media:/data
-      - /home/user/docker/qbittorrent/blocklist.p2p:/blocklist.p2p:ro
+  gluetun:
+    image: qmcgaw/gluetun:latest
+    container_name: gluetun
+    # line above must be uncommented to allow external containers to connect.
+    # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/connect-a-container-to-gluetun.md#external-container-to-gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
     ports:
-      - 8080:8080
+      - 8888:8888/tcp # HTTP proxy
+      - 8388:8388/tcp # Shadowsocks
+      - 8388:8388/udp # Shadowsocks
+      # - 8089:8089 # qBittorrent
+    volumes:
+      - /home/user/docker/gluetun:/gluetun
+    environment:
+      # See https://github.com/qdm12/gluetun-wiki/tree/main/setup#setup
+      - VPN_SERVICE_PROVIDER=$VPN_SERVICE_PROVIDER
+      # OpenVPN:
+      - OPENVPN_USER=$OPENVPN_USER
+      - OPENVPN_PASSWORD=$OPENVPN_PASSWORD
+      - SERVER_COUNTRIES=$SERVER_COUNTRIES
+      #- SERVER_HOSTNAMES= 
+      # only host names are allowed, not groups like p2p
+      - TZ=Europe/Berlin
+      # Server list updater
+      # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/servers.md#update-the-vpn-servers-list
+      - UPDATER_PERIOD=24h
     restart: unless-stopped
-    networks:
-      - traefiknetvpn
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.qbittorrent.rule=Host(`qbittorrent.dockerbox.local`)"
       - "traefik.http.routers.qbittorrent.entrypoints=web"
-      - "traefik.http.services.qbittorrent.loadbalancer.server.port=8080"
+      - "traefik.http.services.qbittorrent.loadbalancer.server.port=8089"
       - "traefik.http.routers.qbittorrent.service=qbittorrent"
       - "traefik.docker.network=traefiknetvpn"
-networks:
-  traefiknetvpn:
-    external: true
+      
+  qbittorrent:
+    image: hotio/qbittorrent:latest
+    container_name: qbittorrent
+    network_mode: "service:gluetun"
+    depends_on:
+      - gluetun
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+      - UMASK=002
+      - WEBUI_PORT=8089
+    volumes:
+      - config:/config
+      - /home/user/docker/jellyfin/media:/data
+      - /home/user/docker/qbittorrent/blocklist.p2p:/blocklist.p2p:ro
+    restart: unless-stopped
+
 volumes:
     config:
