@@ -5,8 +5,8 @@ services:
     container_name: jellyfin
     volumes:
       - config:/config
-      - /home/user/docker/jellyfin/cache:/cache
-      - /home/user/docker/jellyfin/media:/media
+      - $DOCKER_STORAGE/jellyfin/cache:/cache
+      - $DOCKER_STORAGE/jellyfin/media:/media
     restart: 'always'
     networks:
       - traefiknet
