@@ -6,7 +6,7 @@ services:
     networks:
       - default_paperless
     volumes:
-      - redisdata:/data
+      - $DOCKER_STORAGE/paperless/redisdata:/data
 
   db:
     image: docker.io/library/postgres:15
@@ -14,7 +14,7 @@ services:
     networks:
       - default_paperless
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - $DOCKER_STORAGE/paperless/pgdata:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: paperless
       POSTGRES_USER: paperless
@@ -35,8 +35,8 @@ services:
       - traefiknet
       - default_paperless
     volumes:
-      - data:/usr/src/paperless/data
-      - media:/usr/src/paperless/media
+      - $DOCKER_STORAGE/paperless/data:/usr/src/paperless/data
+      - $DOCKER_STORAGE/paperless/media:/usr/src/paperless/media
       # these two should be changed
       - $EXPORT_DIR:/usr/src/paperless/export
       - $CONSUME_DIR:/usr/src/paperless/consume
@@ -84,9 +84,3 @@ networks:
   traefiknet:
     external: true
   default_paperless:
-
-volumes:
-  data:
-  media:
-  pgdata:
-  redisdata:
