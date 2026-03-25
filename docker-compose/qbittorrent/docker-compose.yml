@@ -20,8 +20,10 @@ services:
     environment:
       # See https://github.com/qdm12/gluetun-wiki/tree/main/setup#setup
       - VPN_SERVICE_PROVIDER=$VPN_SERVICE_PROVIDER
-      # OpenVPN:
-      - OPENVPN_USER=$OPENVPN_USER
+      - VPN_TYPE=$VPN_TYPE
+      # WIREGUARD:
+      - WIREGUARD_PRIVATE_KEY=$WIREGUARD_PRIVATE_KEY
+      - WIREGUARD_ADDRESSES=$WIREGUARD_ADDRESSES
       - SERVER_CITIES=$SERVER_CITIES
       #- SERVER_HOSTNAMES= 
       # only host names are allowed, not groups like p2p
