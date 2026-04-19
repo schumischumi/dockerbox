@@ -6,6 +6,7 @@ services:
       - $DOCKER_STORAGE/jellyfin/config:/config
       - $DOCKER_STORAGE/jellyfin/cache:/cache
       - $DOCKER_STORAGE/jellyfin/media:/media
+      - /mnt/nfs/media/media:/media/archive
     restart: 'always'
     networks:
       - traefiknet
