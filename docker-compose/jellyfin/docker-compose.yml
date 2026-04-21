@@ -13,12 +13,12 @@ services:
     environment:
       - JELLYFIN_PublishedServerUrl=http://jellyfin.dockerbox.local
     group_add: # by id as these may not exist within the container. Needed to provide permissions to the VAAPI Devices
-      - '104' #render
+      - '993' #render
       - '44' #video
     devices:
     # VAAPI Devices
       - /dev/dri/renderD128:/dev/dri/renderD128
-      - /dev/dri/card0:/dev/dri/card0
+      - /dev/dri/card0:/dev/dri/card1
     labels:
       - 'traefik.enable=true'
       - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.dockerbox.local`)"
