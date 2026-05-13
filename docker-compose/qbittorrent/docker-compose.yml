@@ -56,7 +56,7 @@ services:
     volumes:
       - $DOCKER_STORAGE/qbittorrent/config:/config
       - $DOCKER_STORAGE/jellyfin/media:/data
-      - $DOCKER_STORAGE/qbittorrent/blocklist.p2p:/blocklist.p2p:ro
+      #- $DOCKER_STORAGE/qbittorrent/blocklist.p2p:/blocklist.p2p:ro
     restart: unless-stopped
 
 networks:
